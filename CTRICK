@@ -1,0 +1,77 @@
+
+/*
+  Name: CTRICK
+  Author: Sagorika Das
+  Algo: Binary Index Tree
+*/
+
+#include<iostream>
+#include<algorithm>
+#define MAX 100005
+using namespace std;
+
+int bit[MAX];
+
+void update(int idx,int v)
+{
+     while(idx<=MAX)
+     {
+                    bit[idx]+=v;
+                    idx+=(idx)&(-idx);
+                    }
+     
+     }
+     
+     
+     
+     int read(int idx)
+     {
+         int sum=0;
+         while(idx>0)
+         {
+                     sum+=bit[idx];
+                     idx-=(idx)&(-idx);
+                     }
+                     return sum;
+         }
+
+int ans[MAX];
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--){
+    int n;
+    cin>>n;
+    for(int i=1;i<=n;i++)
+    update(i,1);
+    int x=1,free=n,space;
+    for(int i=1;i<=n;i++)
+    {
+    if(x>1)
+    space=(i+read(x-1))%free;
+    else
+    space=i%free;
+    
+    int s=1,e=n;
+    while(s<e)
+    { 
+              int m=(s+e)/2;
+              if(read(m)>space)
+              e=m;
+              else
+              s=m+1;
+              }
+              ans[s]=i;
+             update(s,-1);
+              x=s;
+              free--;
+}
+
+for(int i=1;i<=n;i++)
+cout<<ans[i]<<" ";
+cout<<endl;
+}
+    //system("pause");
+ return 0;   
+}
