@@ -1,0 +1,96 @@
+/*
+Problem: DQUERY
+Algo: Mo's algorithm
+*/
+
+#include<iostream>
+#include<algorithm>
+#define N 311111
+#define sqt 555
+#define Q 200005
+#define MAX 1000006
+using namespace std;
+int freq[MAX]={0};
+int a[N],ans[Q];
+int answer=0;
+struct node{
+       int L,R,index;
+       }q[Q];
+
+void add(int a)//to add an element inside the range
+{
+     freq[a]++;
+     if(freq[a]==1)
+     answer++;
+}
+
+void remove(int a)//to remove an element from the range
+{
+     freq[a]--;
+    if(freq[a]==0)
+         answer--;
+}
+
+bool cmp(node i,node j)
+{
+     if(i.L/sqt!=j.L/sqt)
+     {
+                         return i.L/sqt < j.L/sqt;//ascending order by bucket number
+                         }
+                         return i.R < j.R;// if bucket number is same then ascending order of the upper_bound of range i.e R
+     }
+     
+     
+     int main()
+     {
+         int n;
+         scanf("%d",&n);
+         
+         for(int i=0;i<n;i++)
+        scanf("%d",&a[i]);
+         
+         int m;
+         scanf("%d",&m);
+         
+         for(int i=0;i<m;i++)
+         {
+                 scanf("%d%d",&q[i].L,&q[i].R);
+                 q[i].L--;q[i].R--;
+                 q[i].index=i;
+                 }
+                 
+                 sort(q,q+m,cmp);
+                 
+                 for(int i=0;i<m;i++)
+                 {
+                         int l=q[i].L;
+                         int r=q[i].R;
+                         int cl=0,cr=0;
+                         int cnt=0;
+                         while(cl<l)
+                         {
+                         remove(a[cl]);
+                         cl++;           
+                         }
+                         while(cl>l)
+                         {
+                         add(a[cl-1]);           
+                         cl--;           
+                         }
+                         while(cr<r)
+                         {
+                         add(a[cr]);
+                         cr++;           
+                         }
+                         while(cr>r)
+                         {
+                         remove(a[cr-1]);           
+                         cr--;
+                         }
+                         ans[q[i].index]=answer;
+                         }
+                 for(int i=0;i<m;i++)
+                 printf("%d\n",ans[i]);
+         //system("pause");
+         return 0;
+         }
