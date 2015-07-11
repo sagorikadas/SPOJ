@@ -1,0 +1,52 @@
+/*
+INCSEQ 
+Algo: Binary Index Tree + DP
+*/
+#include<iostream>
+#define MAX 100005
+#define MOD 5000000
+using namespace std;
+int bit[51][MAX]={0};
+
+void update(int *b,int idx,int v)
+{
+     while(idx<=MAX)
+     {
+     b[idx]+=v;
+     if(b[idx]>=MOD)b[idx]-=MOD;
+     idx+=idx&(-idx);               
+     }
+     
+     }
+     
+     int read(int *b,int idx)
+     {
+         int sum=0;
+         while(idx>0)
+         {
+                     sum+=b[idx];
+                     if(sum>=MOD)sum-=MOD;
+                     idx-=(idx)&(-idx);
+                     }
+                     return sum;
+         }
+         
+         
+int main()
+{
+    int n,k,x;
+    scanf("%d%d",&n,&k);
+            while(n--)
+             {
+                  scanf("%d",&x);
+                     update(bit[1],x,1);         //all numbers are LIS of length 1
+                     
+                     for(int i=2;i<=k;i++)
+                     update(bit[i],x,read(bit[i-1],x-1));    
+             }
+             
+             printf("%d",read(bit[k],MAX));
+    system("pause");
+ return 0;   
+}
+
