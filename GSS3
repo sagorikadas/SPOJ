@@ -1,0 +1,133 @@
+/*
+
+GSS3
+Algo: Segment Tree
+
+*/
+
+#include<iostream>
+#include<algorithm>
+#include<climits>
+#include<math.h>
+#define MAX 50010
+using namespace std;
+struct tree{
+       int left,right,sum,best;
+       };
+ 
+ 
+int mid(int i,int j)
+{
+ return i+(j-i)/2;   
+}
+ 
+void merge(tree &t,tree &l,tree &r)
+{
+     t.left = max ( l.left , l.sum + r.left );
+     t.right = max ( r.right , r.sum + l.right );
+     t.sum = l.sum + r.sum;
+     t.best = max ( t.sum , max ( t.left , max ( t.right ,max( l.best,max( r.best, l.right+r.left ) ) ) ) ) ;
+ 
+     }
+void assign(tree &node,int t)
+{
+     node.left=node.right=node.best=node.sum=t;
+     }
+ 
+void buildtree(tree seg[],int a[],int l,int h,int i)
+{
+     if(l==h)
+     {
+     assign(seg[i],a[l]);
+     return;   
+     }
+ 
+     int m=mid(l,h);
+     buildtree(seg,a,l,m,2*i+1);
+     buildtree(seg,a,m+1,h,2*i+2);
+     merge(seg[i],seg[2*i+1],seg[2*i+2]);
+  }
+ 
+tree  query(tree seg[],int ss,int se,int qs,int qe,int i)
+{
+  if(ss>=qs&&se<=qe)
+  return seg[i];
+ 
+    tree result,l,r;
+ 
+    assign(result,0);
+    
+    if((ss<qs&&se<qs)||(ss>qe&&se>qe))
+       return result;
+ 
+    int m=mid(ss,se);
+    
+     l=query(seg,ss,m,qs,qe,2*i+1);
+     r=query(seg,m+1,se,qs,qe,2*i+2);
+     
+    if(qe<=m)
+    return l;               
+ 
+    if(qs>m)
+    return r;
+ 
+ 
+     merge(result,l,r);
+     return result;
+ 
+ 
+} 
+  void modify(tree seg[],int ss,int se,int index,int i,int v)
+  {
+       if(ss==index&&se==index)
+       {
+       assign(seg[i],v);
+       return;
+       }
+       
+       
+       int m=mid(ss,se);
+       if(index<=m)
+       modify(seg,ss,m,index,2*i+1,v);
+       else 
+       modify(seg,m+1,se,index,2*i+2,v);
+       merge(seg[i],seg[2*i+1],seg[2*i+2]);
+       
+       }
+       
+ 
+int a[MAX];
+tree seg[4*MAX];
+ 
+int main()
+{
+    int n;
+    scanf("%d",&n);
+ 
+    for(int i=0;i<n;i++)
+    scanf("%d",&a[i]);
+ 
+ 
+    buildtree(seg,a,0,n-1,0);
+ 
+    int m;
+    scanf("%d",&m);
+    for(int i=0;i<m;i++)
+    {
+    int z,p,q;
+    scanf("%d%d%d",&z,&p,&q);
+    if(z==0)
+    {
+    p--;
+    modify(seg,0,n-1,p,0,q);
+    }
+    else
+    {
+    p--;q--;
+    tree result=query(seg,0,n-1,p,q,0);
+    printf("%d\n",result.best);
+    }
+}
+    //system("pause");
+ return 0;   
+}
