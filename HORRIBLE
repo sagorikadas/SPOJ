@@ -1,0 +1,109 @@
+/*
+HORRIBLE
+Algo: Binary Index Trees-Range Updates and Range Queries
+*/
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+#define MAX 100005
+using namespace std;
+typedef long long ll; 
+ll bit1[MAX],bit2[MAX],a[MAX];
+
+void updateBit1(int j,ll value)
+{
+     
+     while(j<=MAX)
+     {
+     bit1[j]+=value;           
+     j+=j&(-j);
+     }
+     
+     }
+
+void updateBit2(int j,ll value)
+{
+     
+     while(j<=MAX)
+     {
+     bit2[j]+=value;           
+     j+=j&(-j);
+     }
+     
+     }
+
+     ll getSumBit1(int index)
+     {
+         ll sum=0;
+         while(index>0)
+         {
+         sum+=bit1[index];              
+         index-=(index)&(-index);              
+         }
+         return sum;
+         }
+         
+     ll getSumBit2(int index)
+     {
+         ll sum=0;
+         while(index>0)
+         {
+         sum+=bit2[index];              
+         index-=(index)&(-index);              
+         }
+         return sum;
+         }
+         
+         
+         ll getSums(int i)
+         {
+             return getSumBit1(i)*i-getSumBit2(i);
+             }
+             
+             ll getSum(int i,int j)
+             {
+                 return getSums(j)-getSums(i-1);
+              }
+             
+             
+             int main()
+             {
+                 
+                 int t;
+                 cin>>t;
+                 while(t--){
+                           
+                            memset(bit2,0,sizeof bit2);
+                            memset(bit1,0,sizeof bit1);
+                            int n,c;
+                            cin>>n>>c;
+                           
+                            for(int i=0;i<c;i++)
+                            {
+                                    int m;
+                                    cin>>m;
+                                    if(m==0)
+                                    {
+                                            ll p,q;
+                                            ll v;
+                                            cin>>p>>q>>v;
+                                            updateBit1(p,v);
+                                            updateBit1(q+1,-v);
+                                            updateBit2(p,v*(p-1));
+                                            updateBit2(q+1,-v*q);
+                                            }
+                                    else
+                                    {
+                                        int p,q;
+                                        cin>>p>>q;
+                                        cout<<getSum(p,q)<<endl;
+                                        }
+                                    }
+                            }
+                 
+                 //system("pause");
+                 return 0;
+                 }
+             
+             
+             
