@@ -1,0 +1,72 @@
+/*
+RENT
+Algo - DP + Binary Search
+Time Complexity : O(nlogn)
+*/
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+
+struct arr{
+       int s,e,d,v;
+       }a[11111];
+       
+       int n,dp[11111];
+       
+bool cmp(arr a,arr b)
+{
+     return a.e<b.e;
+
+     }
+     
+     int findpos(int lo,int hi,int start)//binary search 
+     {
+         int mid;
+             while(lo<hi)
+                {
+                mid=lo+(hi-lo+1)/2;
+                if(a[mid].e<=start)
+                lo=mid;
+                else
+                hi=mid-1;
+                
+                }
+         if(a[lo].e > start) return -1;
+         return lo;
+         }
+     
+int main()
+{
+    int T;
+    cin>>T;
+           while(T--){
+    cin>>n;
+    
+    for(int i=0;i<n;i++)
+    {
+    cin>>a[i].s>>a[i].d>>a[i].v;
+    a[i].e=a[i].d+a[i].s;
+    }
+    memset(dp,0,sizeof dp);
+    sort(a,a+n,cmp);
+    
+    dp[0]=a[0].v;
+    
+    
+    for(int i=1;i<n;i++)
+    {
+    
+    int pro=a[i].v;
+    int l=findpos(0,i-1,a[i].s);
+    if(l!=-1)
+     pro+=dp[l];
+     
+   dp[i]=max( pro ,dp[i-1] ); 
+     
+   }
+                cout<<dp[n-1]<<endl;
+                }        
+    //system("pause");
+ return 0;   
+}
