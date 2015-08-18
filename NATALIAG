@@ -1,0 +1,79 @@
+/*
+NATALIAG 
+Algo : BFS
+*/
+#include<iostream>
+#include<cstring>
+#include<queue>
+#define F first
+#define S second
+using namespace std;
+int m,n;
+int mx[]={1,-1,0,0};
+int my[]={0,0,1,-1};
+char grid[200][200];
+int bfs(pair<int ,int> s,pair<int ,int> e)
+{
+queue<pair<int,int> >q;
+pair<int,int> p;
+int vis[200][200];
+int dist[200][200];
+for(int i=0;i<200;i++) for(int j=0;j<200;j++) dist[i][j]=-1;
+memset(vis,0,sizeof vis);
+
+q.push(s);
+vis[s.F][s.S]=1;
+dist[s.F][s.S]=0;    
+while(!q.empty())
+{
+                 p=q.front();        
+                 q.pop();
+                 if(p==e)
+                 return dist[e.F][e.S];
+                 
+                 for(int i=0;i<4;i++)
+                 {
+                    int x=p.F+mx[i];int y=p.S+my[i];
+                    if(x<0||x>=m||y<0||y>=n) 
+                    continue;
+                    if(!vis[x][y]&&(grid[x][y]=='O'||grid[x][y]=='#'))
+                    {
+                    vis[x][y]=1;
+                    dist[x][y]=dist[p.F][p.S]+1;
+                    q.push(make_pair(x,y));
+                    }
+                 }
+}
+return -1;
+}
+
+int main()
+{
+    std::ios::sync_with_stdio(0);
+    int T;
+    cin>>T;
+           while(T--)
+           {
+                     string str;
+                     pair<int,int > start,end;
+                     cin>>m>>n;
+                     for(int i=0;i<m;i++)
+                     {
+                     cin>>str;
+                     for(int j=0;j<n;j++)
+                     {
+                     grid[i][j]=str[j];
+                     if(str[j]=='$')
+                     {start.first=i;start.second=j;}
+                     if(str[j]=='#')
+                     {end.first=i;end.second=j;}
+                     
+                     }
+                     }
+             
+           cout<<bfs(start,end)<<endl;       
+                     
+           }
+  //  system("pause");
+ return 0;   
+}
