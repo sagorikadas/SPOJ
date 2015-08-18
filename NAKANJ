@@ -1,0 +1,72 @@
+/*
+NAKANJ
+Algo : BFS
+Author: Sagorika
+*/
+#include<iostream>
+#include<queue>
+#include<utility>
+#include<cstring>
+#define pb push 
+using namespace std;
+ 
+ 
+ 
+int mx[]={1,1,2,2,-1,-1,-2,-2};
+int my[]={2,-2,1,-1,-2,2,-1,1};
+ 
+int bfs(int a1,int b1,int a2,int b2)
+{
+ 
+int moves[9][9];
+int vis[9][9];
+queue<pair<int ,int> > q;
+pair<int ,int> p,pp;
+memset(vis,0,sizeof vis);
+memset(moves,0,sizeof moves);
+ 
+ q.pb(make_pair(a1,b1));
+ moves[a1][b1]=0;
+ p=make_pair(a2,b2);
+ vis[a1][b1]=1;
+ 
+ while(!q.empty())
+ {
+   pp=q.front();
+   q.pop();
+ 
+   if(pp==p) 
+   return moves[a2][b2];
+ 
+   for(int i=0;i<8;i++)
+   {
+     int x=pp.first+mx[i];int y=pp.second+my[i];
+ 
+     if(x>8||x<1||y>8||y<1||vis[x][y])
+           continue;
+ 
+           vis[x][y]=1;
+           moves[x][y]=moves[pp.first][pp.second]+1;
+           q.pb(make_pair(x,y));
+   }                
+ 
+ }   
+ 
+}
+ 
+ 
+int main()
+{
+    std::ios::sync_with_stdio(0);
+    int T;
+    cin>>T;
+           while(T--)
+           {
+    char a1,a2;
+    int b1,b2;
+    cin>>a1>>b1>>a2>>b2;
+    cout<<bfs(a1-'a'+1,b1,a2-'a'+1,b2)<<endl;
+}
+   // system("pause");   
+    return 0;
+}
