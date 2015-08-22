@@ -1,0 +1,59 @@
+/*
+PT07X
+Algo : DFS
+
+Just do DFS, if both the parent and the child are not included then add the parent.
+*/
+#include<iostream>
+#include<algorithm>
+#include<list>
+#include<vector>
+#include<utility>
+
+using namespace std;
+list<int> *adj;
+int n,cnt=0;
+
+bool dfsuntill(int idx,bool *vis,bool *m)
+{
+     vis[idx]=true;
+     list<int>::iterator it;
+     
+     for(it=adj[idx].begin();it!=adj[idx].end();it++)
+     {
+     if(!vis[*it])
+     {
+     if(!dfsuntill(*it,vis,m)&&!m[idx])
+     {m[idx]=true;cnt++;}
+     }
+     }
+     return m[idx];
+}
+void dfs()
+{
+     bool *vis=new bool[n+1];
+     bool *m=new bool[n+1];
+     for(int i=0;i<n;i++)
+     {vis[i]=false;m[i]=false;}
+     
+    dfsuntill(1,vis,m);
+     }
+
+
+int main(){
+   std::ios::sync_with_stdio(0);
+    
+  int u,v;
+  cin>>n;
+  adj=new list<int> [n+1];
+  for(int i=0;i<n-1;i++)
+  {
+  int u,v;        
+  cin>>u>>v;
+  adj[u].push_back(v);
+  adj[v].push_back(u);
+  }
+  dfs();  
+  cout<<cnt;
+ return 0;
+}
