@@ -1,0 +1,230 @@
+/*
+IM
+Algo: Max - flow
+
+
+We solve this by reducing it to a max-flow problem. We will make another directed graph where the max-flow is the number of 
+vertex-disjoint paths from S to T. This is how you generate this new graph: Assign S  as the  source and T as the sink. 
+Make two copies of every other vertex (call  the copies of vertex u as Au and Bu). We will add edges in the new graph  in 
+the following way:
+If there was an edge between S and T  in the original graph, add a directed edge with capacity 1 from S to T in the new graph
+For every vertex u with an edge with S in the original graph, add a directed edge with capacity 1 from S to Au in the new graph
+For every vertex u with an edge with T in the original graph, add a directed edge with capacity 1 from Bu to T in the new graph
+For  every pair of vertices {u,v} with an edge in the original graph, add  directed edges with capacity 1 from Bu to Av 
+and from Bv to Au
+Add a directed edge with capacity 1 from Au to Bu for all u
+
+
+Now, how do we reduce the Intergalactic map problem to this? Simple.
+Add a new vertex X and connect it to Naboo and Coruscant. 
+Finding a vertex-disjoint path from Naboo to Tatooine to Coruscant is possible if and only if the number of vertex-disjoint
+paths from Tatooine to X is exactly 2. Use the above graph reduction and you are done.
+*/
+#include <cstdio>
+#include <algorithm>
+#include<iostream>
+#include<vector>
+#include<climits>
+#include <complex>
+#include <iostream>
+#include <valarray>
+#include<cstring>
+#include<queue>
+#include<bitset>
+#include<map>
+#include<set>
+#include<sstream>
+#include<ctime>
+#include <stack>
+#include <iomanip>
+#include <cassert>
+
+
+using namespace std;
+
+#define PB push_back
+#define i64 long long
+#define FOR(i,a,b) for(i=(a);i<(b);++i)
+#define FORE(i,a,b) for(i=(a);i<=(b);++i)
+#define REP(i,n) FOR(i,0,n)
+#define REPE(i,n) FORE(i,0,n)
+#define SZ(v) ((v).size())
+#define LD long double
+#define VI vector<int>
+#define VS vector<string>
+#define VD vector<double>
+#define VLD vector<LD>
+#define MSET(x,y) memset((x),(y),sizeof(x))
+#define SZOF(x) sizeof((x))
+#define VVI vector< VI >
+#define PII pair< int,int >
+#define VPII vector< PII >
+#define MP make_pair
+#define PIPII pair<int, PII >
+#define PIPIPII pair< int, PIPII >
+#define u64 unsigned i64
+#define Vi64 vector<i64>
+#define Vu64 vector<u64>
+
+#define MAXN 320000
+#define MAXM 1200000
+
+int to[MAXM],nxt[MAXM],first_edge[MAXN];
+int cap[MAXM];
+int num_edges;
+int n,m;
+int st,en;
+int distt[MAXN],q[MAXN];
+int headd,taill;
+
+
+void add_edge(int u,int v,int uv,int vu)
+{
+    to[num_edges]=v;
+    cap[num_edges]=uv;
+    nxt[num_edges]=first_edge[u];
+    first_edge[u]=num_edges++;
+
+    to[num_edges]=u;
+    cap[num_edges]=vu;
+    nxt[num_edges]=first_edge[v];
+    first_edge[v]=num_edges++;
+}
+
+
+bool bfs()
+{
+    MSET(distt,-1);
+
+    headd=taill=0;
+    q[taill++]=st;
+    distt[st]=0;
+
+    int u;
+
+    while(headd<taill)
+    {
+        //printf("DD\n");
+        u=q[headd++];
+
+        for(int i=first_edge[u];i>=0;i=nxt[i])
+        {
+            if(cap[i]>0 && distt[to[i]]==-1)
+            {
+                q[taill++]=to[i];
+                distt[to[i]]=distt[u]+1;
+            }
+        }
+    }
+
+    return distt[en]!=-1;
+}
+
+
+
+
+int dfs(int u,int floww)
+{
+    if(u==en)
+    {
+        return floww;
+    }
+
+
+    for(int i=first_edge[u];i>=0;i=nxt[i])
+    {
+        if(cap[i]>0 && distt[to[i]]==distt[u]+1)
+        {
+            int ret=dfs(to[i],min(floww,cap[i]));
+
+            if(ret>0)
+            {
+                cap[i]-=ret;
+                cap[i^1]+=ret;
+                return ret;
+            }
+        }
+    }
+
+
+    return 0;
+}
+
+
+
+
+int max_flow()
+{
+    int ret=0;
+
+    int x;
+
+    while(bfs())
+    {
+        while(true)
+        {
+            x=dfs(st,INT_MAX);
+            if(x==0)
+            {
+                break;
+            }
+
+            ret+=x;
+        }
+    }
+
+    return ret;
+}
+
+
+int main()
+{
+    freopen("Text/IM.txt","r",stdin);
+    int cases,x,y;
+
+    scanf("%d",&cases);
+
+    while(cases--)
+    {
+        MSET(first_edge,-1);
+        num_edges=0;
+
+        scanf("%d %d",&n,&m);
+
+        for(int i=1;i<=n;++i)
+        {
+            add_edge(2*i-1,2*i,1,0);
+        }
+
+        for(int i=0;i<m;++i)
+        {
+            scanf("%d %d",&x,&y);
+            if(x > n || y > n) continue;
+            add_edge(2*x,2*y-1,n+1,0);
+            add_edge(2*x-1,2*y,0,n+1);
+        }
+
+        add_edge(2*1,2*n+1,1,0);
+        add_edge(2*3,2*n+1,1,0);
+
+        st=2*2;
+        en=2*n+1;
+
+        int ret=max_flow();
+
+        //printf("%d\n",ret);
+
+
+        if(ret==2)
+        {
+            printf("YES\n");
+        }
+        else
+        {
+            printf("NO\n");
+        }
+    }
+
+
+    return 0;
+}
